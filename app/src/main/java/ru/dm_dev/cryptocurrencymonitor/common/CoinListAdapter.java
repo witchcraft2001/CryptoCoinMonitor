@@ -38,7 +38,7 @@ public class CoinListAdapter extends RecyclerView.Adapter<CoinListAdapter.ViewHo
         Data item = list.get(position);
         holder.setRowID(item.getId());
         holder.name.setText(item.getFullName());
-        holder.category.setText(item.getSymbol());
+        holder.symbol.setText(item.getSymbol());
         Glide
                 .with(context)
                 .load(baseImageUrl + item.getImageUrl())
@@ -48,6 +48,15 @@ public class CoinListAdapter extends RecyclerView.Adapter<CoinListAdapter.ViewHo
     @Override
     public int getItemCount() {
         return (list != null) ? list.size() : 0;
+    }
+
+    public String getSymbolById(long id) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getId() == id) {
+                return list.get(i).getSymbol();
+            }
+        }
+        return null;
     }
 
     public void setList(List<Data> list) {
@@ -65,15 +74,16 @@ public class CoinListAdapter extends RecyclerView.Adapter<CoinListAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private long rowID;
+        //private String symbol;
         public final TextView name;
-        public final TextView category;
+        public final TextView symbol;
         public final ImageView image;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            name = (TextView)itemView.findViewById(R.id.text_full_name);
-            category = (TextView)itemView.findViewById(R.id.text_symbol);
-            image = (ImageView)itemView.findViewById(R.id.image);
+            name = itemView.findViewById(R.id.text_full_name);
+            symbol = itemView.findViewById(R.id.text_symbol);
+            image = itemView.findViewById(R.id.image);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -82,15 +92,6 @@ public class CoinListAdapter extends RecyclerView.Adapter<CoinListAdapter.ViewHo
                     }
                 }
             });
-//            ImageView btn = (ImageView)itemView.findViewById(R.id.button_edit);
-//            btn.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if (clickListener != null) {
-//                        clickListener.onClickEditButton(rowID);
-//                    }
-//                }
-//            });
         }
 
         public void setRowID(long rowID) {

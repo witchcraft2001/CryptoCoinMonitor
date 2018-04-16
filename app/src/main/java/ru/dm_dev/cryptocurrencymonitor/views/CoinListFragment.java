@@ -1,6 +1,7 @@
 package ru.dm_dev.cryptocurrencymonitor.views;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -79,7 +80,9 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
 
     @Override
     public void onClickItem(long id) {
-
+        Intent intent = new Intent(getContext(), CoinDetailsActivity.class);
+        intent.putExtra(CoinDetailsActivity.COIN_SYMBOL, coinAdapter.getSymbolById(id));
+        startActivity(intent);
     }
 
     private Call<CoinList> callCoinListApi() {
@@ -97,8 +100,6 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
                     public void onResponse(Call<CoinList> call, Response<CoinList> response) {
                         Log.d(LOG_TAG, "loadFirstPage_cb: " + response.code());
                         CoinList items = response.body();
-//                        progress.setVisibility(View.GONE);
-//                        rvCat.setVisibility(View.VISIBLE);
                         coinList = new ArrayList<Data>(items.getData().values());
                         coinAdapter.setBaseImageUrl(items.getBaseImageUrl());
                         coinAdapter.setList(coinList);
