@@ -1,0 +1,104 @@
+package ru.dm_dev.cryptocurrencymonitor.views;
+
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import ru.dm_dev.cryptocurrencymonitor.R;
+import ru.dm_dev.cryptocurrencymonitor.api.CryptoCompareApi;
+import ru.dm_dev.cryptocurrencymonitor.api.CryptoCompareService;
+import ru.dm_dev.cryptocurrencymonitor.api.models.CoinList;
+import ru.dm_dev.cryptocurrencymonitor.api.models.Data;
+import ru.dm_dev.cryptocurrencymonitor.common.AdapterClickListener;
+import ru.dm_dev.cryptocurrencymonitor.common.CoinListAdapter;
+import ru.dm_dev.cryptocurrencymonitor.common.ItemDivider;
+
+public class CoinListFragment extends Fragment implements AdapterClickListener {
+
+    private static final String LOG_TAG = "CoinListFragment";
+    private CryptoCompareService service;
+    private View rootView;
+    private RecyclerView recyclerView;
+    private List<Data> coinList;
+    private CoinListAdapter coinAdapter;
+
+    public CoinListFragment() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        rootView = inflater.inflate(R.layout.fragment_coin_list, container, false);
+
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
+
+        // recyclerView should display items in a vertical list
+        recyclerView.setLayoutManager(
+                new LinearLayoutManager(getActivity().getBaseContext()));
+
+        coinAdapter = new CoinListAdapter(getContext(), null, this);
+
+        recyclerView.setAdapter(coinAdapter);
+
+        // attach a custom ItemDecorator to draw dividers between list items
+        recyclerView.addItemDecoration(new ItemDivider(getContext()));
+
+        // improves performance if RecyclerView's layout size never changes
+        recyclerView.setHasFixedSize(false);
+
+        service = CryptoCompareApi.getClient(getContext()).create(CryptoCompareService.class);
+
+        loadCoinList();
+
+        return rootView;
+    }
+
+    @Override
+    public void onClickItem(long id) {
+
+    }
+
+    private Call<CoinList> callCoinListApi() {
+        return service.getCoinList();
+    }
+
+    private void loadCoinList() {
+        Log.d(LOG_TAG, "loadCoinList");
+
+        callCoinListApi().enqueue(
+                new Callback<CoinList>() {
+                    @Override
+                    public void onResponse(Call<CoinList> call, Response<CoinList> response) {
+                        Log.d(LOG_TAG, "loadFirstPage_cb: " + response.code());
+                        CoinList items = response.body();
+//                        progress.setVisibility(View.GONE);
+//                        rvCat.setVisibility(View.VISIBLE);
+                        coinList = new ArrayList<Data>(items.getData().values());
+                        coinAdapter.setBaseImageUrl(items.getBaseImageUrl());
+                        coinAdapter.setList(coinList);
+                    }
+
+                    @Override
+                    public void onFailure(Call<CoinList> call, Throwable t) {
+                        t.printStackTrace();
+//                        setErrorVisible(getString(R.string.text_message_error_connection));
+                    }
+                }
+        );
+    }
+
+}
