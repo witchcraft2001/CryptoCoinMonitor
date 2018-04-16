@@ -49,8 +49,7 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         coinListFragment = new CoinListFragment();
-
-
+        replaceFragment(coinListFragment);
     }
 
     @Override

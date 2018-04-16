@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
     private RecyclerView recyclerView;
     private List<Data> coinList;
     private CoinListAdapter coinAdapter;
+    private ProgressBar progress;
 
     public CoinListFragment() {
         // Required empty public constructor
@@ -43,7 +45,7 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_coin_list, container, false);
-
+        progress = rootView.findViewById(R.id.progress);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rv);
 
         // recyclerView should display items in a vertical list
@@ -67,6 +69,14 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
         return rootView;
     }
 
+    private void setProgressBarVisible(boolean visible) {
+        progress.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private void setRecyclerViewVisible(boolean visible) {
+        recyclerView.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
     @Override
     public void onClickItem(long id) {
 
@@ -79,6 +89,8 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
     private void loadCoinList() {
         Log.d(LOG_TAG, "loadCoinList");
 
+        setProgressBarVisible(true);
+        setRecyclerViewVisible(false);
         callCoinListApi().enqueue(
                 new Callback<CoinList>() {
                     @Override
@@ -90,11 +102,14 @@ public class CoinListFragment extends Fragment implements AdapterClickListener {
                         coinList = new ArrayList<Data>(items.getData().values());
                         coinAdapter.setBaseImageUrl(items.getBaseImageUrl());
                         coinAdapter.setList(coinList);
+                        setRecyclerViewVisible(true);
+                        setProgressBarVisible(false);
                     }
 
                     @Override
                     public void onFailure(Call<CoinList> call, Throwable t) {
                         t.printStackTrace();
+                        setProgressBarVisible(false);
 //                        setErrorVisible(getString(R.string.text_message_error_connection));
                     }
                 }
