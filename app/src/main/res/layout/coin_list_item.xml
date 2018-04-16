@@ -25,7 +25,9 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_toEndOf="@id/image" />
+        android:layout_toEndOf="@id/image"
+        android:layout_toLeftOf="@id/chevron"
+        android:layout_toStartOf="@id/chevron" />
 
     <TextView
         android:id="@+id/text_symbol"
@@ -33,6 +35,18 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/image"
         android:layout_below="@id/text_full_name"
-        android:layout_toEndOf="@id/image" />
+        android:layout_toEndOf="@id/image"
+        android:layout_toLeftOf="@id/chevron"
+        android:layout_toStartOf="@id/chevron" />
+
+    <ImageView
+        android:id="@+id/chevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_chevron_right"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        />
 
 </RelativeLayout>
